@@ -1,10 +1,14 @@
 import React from 'react'
+import baseUrl from "../utils/baseUrl";
+import axios from "axios";
+import { HeaderMessage, FooterMessage } from '../components/Common/WelcomeMessage';
 
 const Login = () => {
     return (
-        <div>
-            Login
-        </div>
+        <>
+            <HeaderMessage />
+            <FooterMessage />
+        </>
     )
 }
 

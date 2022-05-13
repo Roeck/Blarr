@@ -1,10 +1,12 @@
 import React from 'react'
+import { HeaderMessage, FooterMessage } from '../components/Common/WelcomeMessage';
 
 const Signup = () => {
     return (
-        <div>
-            Signup
-        </div>
+        <>
+            <HeaderMessage />
+            <FooterMessage />
+        </>
     )
 }
 
