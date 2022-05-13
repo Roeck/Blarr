@@ -27,7 +27,7 @@ export const FooterMessage = () => {
                 <>
                     <Message attached="bottom" warning>
                         <Icon name="help" />
-                        Existing User? <Link href="/Login">Login Here Instead</Link>
+                        Existing User? <Link href="/Login">Login Instead</Link>
                     </Message>
                     <Divider hidden />
                 </>
