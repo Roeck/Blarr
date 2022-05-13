@@ -5,6 +5,7 @@ import ImageDropDiv from "../components/Common/ImageDropDiv";
 import { HeaderMessage, FooterMessage } from "../components/Common/WelcomeMessage";
 import axios from "axios";
 import baseUrl from "../utils/baseUrl";
+import { registerUser } from "../utils/authUser";
 
 let controller = null;
 
