@@ -1,6 +1,6 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: true,
+module.exports = {
+  env: {
+    CLOUDINARY_URL: "https://api.cloudinary.com/v1_1/randerins/image/upload"
+  }
 }
-
-module.exports = nextConfig
+// process.env.CLOUDINARY_URL
