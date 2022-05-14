@@ -10,9 +10,9 @@ export const HeaderMessage = () => {
         <Message
             color="blue"
             attached
-            header={signupRoute ? "Get Started" : "Welcome Back!"}
+            header={signupRoute ? "Get Started" : "Welcome!"}
             icon={signupRoute ? "settings" : "privacy"}
-            content={signupRoute ? "Create New Account" : "Login with Email and Password"}
+            content={signupRoute ? "Create New Account" : "Login/Register with your information"}
         />
     );
 };
