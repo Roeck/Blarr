@@ -215,7 +215,7 @@ function Signup() {
                         icon="signup"
                         content="Signup"
                         type="submit"
-                        color="blue"
+                        color="orange"
                         disabled={submitDisabled}
                     />
                 </Segment>
