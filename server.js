@@ -15,6 +15,8 @@ app.use(express.json());
 connectDb();
 
 nextApp.prepare().then(() => {
+    app.use("/api/signup", require("./api/signup"));
+
     app.all("*", (req, res) => handle(req, res));
 
     server.listen(PORT, err => {
