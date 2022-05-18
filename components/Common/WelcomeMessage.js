@@ -19,7 +19,7 @@ export const HeaderMessage = () => {
 
 export const FooterMessage = () => {
     const router = useRouter();
-    const signupRoute = router.pathname === "/Signup";
+    const signupRoute = router.pathname === "/signup";
 
     return (
         <>
@@ -27,7 +27,7 @@ export const FooterMessage = () => {
                 <>
                     <Message attached="bottom" warning>
                         <Icon name="help" />
-                        Existing User? <Link href="/Login">Login Instead</Link>
+                        Existing User? <Link href="/login">Login Instead</Link>
                     </Message>
                     <Divider hidden />
                 </>
@@ -40,7 +40,7 @@ export const FooterMessage = () => {
 
                     <Message attached="bottom" info>
                         <Icon name="help" />
-                        New User? <Link href="/Signup">Register</Link> Instead{" "}
+                        New User? <Link href="/signup">Register</Link> Instead{" "}
                     </Message>
                 </>
             )}
