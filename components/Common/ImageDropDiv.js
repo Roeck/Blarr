@@ -39,7 +39,7 @@ function ImageDropDiv({
                     size="huge"
                     centered
                 />
-                Drag n Drop or Click to upload image
+                Drag n' Drop or Click to Upload Image
             </span>
         );
 

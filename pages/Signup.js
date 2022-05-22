@@ -6,8 +6,10 @@ import { HeaderMessage, FooterMessage } from "../components/Common/WelcomeMessag
 import axios from "axios";
 import baseUrl from "../utils/baseUrl";
 import { registerUser } from "../utils/authUser";
+import uploadPic from "../utils/uploadPicToCloudinary";
+let cancel;
 
-let controller = null;
+const regexUserName = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/;
 
 function Signup() {
     const [user, setUser] = useState({
@@ -42,10 +44,9 @@ function Signup() {
     const [formLoading, setFormLoading] = useState(false);
     const [submitDisabled, setSubmitDisabled] = useState(true);
 
-    const usernameInputDiv = useRef();
-    const requiredFieldDiv = useRef();
-    const usernameInput = useRef();
-    const leftIcon = useRef();
+    const [username, setUsername] = useState("");
+    const [usernameLoading, setUsernameLoading] = useState(false);
+    const [usernameAvailable, setUsernameAvailable] = useState(false);
 
     const [media, setMedia] = useState(null);
     const [mediaPreview, setMediaPreview] = useState(null);
@@ -59,68 +60,48 @@ function Signup() {
         isUser ? setSubmitDisabled(false) : setSubmitDisabled(true);
     }, [user]);
 
-    const checkUsername = async (value = "") => {
-        if (value.length === 0 || value.trim().length === 0) {
-            if (!requiredFieldDiv.current.classList.contains("error")) {
-                requiredFieldDiv.current.classList.add("error");
-            }
-
-            leftIcon.current.className = "close icon";
-            return;
-        }
-
-        usernameInput.current.value = value;
-
-        usernameInputDiv.current.classList.add("loading");
-
+    const checkUsername = async () => {
+        setUsernameLoading(true)
         try {
-            if (controller) controller.abort();
+            cancel && cancel();
 
-            controller = new AbortController();
+            const CancelToken = axios.CancelToken
 
-            const res = await axios.get(`${baseUrl}/api/signup/${value}`, {
-                signal: controller.signal
+            const res = await axios.get(`${baseUrl}/api/signup/${username}`, {
+                cancelToken: new CancelToken(canceler => {
+                    cancel = canceler;
+                })
             });
 
-            if (res.data === "Available") {
-                if (requiredFieldDiv.current.classList.contains("error")) {
-                    requiredFieldDiv.current.classList.remove("error");
-                }
+            if (errorMsg !== null) setErrorMsg(null);
 
-                leftIcon.current.className = "check icon";
-                setUser(prev => ({ ...prev, username: value }));
+            if (res.data === 'Available') {
+                setUsernameAvailable(true);
+                setUser(prev => ({ ...prev, username }));
             }
         } catch (error) {
-            setErrorMsg("Username Not Available");
-
-            if (!requiredFieldDiv.current.classList.contains("error")) {
-                requiredFieldDiv.current.classList.add("error");
-            }
-
-            leftIcon.current.className = "close icon";
+            setErrorMsg('Username not available');
+            setUsernameAvailable(false)
         }
-
-        usernameInputDiv.current.classList.remove("loading");
-        controller = null;
+        setUsernameLoading(false);
     };
+
+    useEffect(() => {
+        username === "" ? setUsernameAvailable(false) : checkUsername();
+    }, [username]);
 
     const handleSubmit = async e => {
         e.preventDefault();
-
-        if (requiredFieldDiv.current.classList.contains("error")) {
-            return setErrorMsg("Username not available");
-        }
-
-        setFormLoading(true);
+        setFormLoading(true)
 
         let profilePicUrl;
         if (media !== null) {
-            profilePicUrl = await uploadPic(media);
+            profilePicUrl = await uploadPic(media)
         }
 
         if (media !== null && !profilePicUrl) {
-            setFormLoading(false);
-            return setErrorMsg("Error Uploading Image");
+            setFormLoading(false)
+            return setErrorMsg('Error uploading image')
         }
 
         await registerUser(user, profilePicUrl, setErrorMsg, setFormLoading);
@@ -190,18 +171,25 @@ function Signup() {
                         required
                     />
 
-                    <div ref={requiredFieldDiv} className="error required field">
-                        <label htmlFor="usernameInput">Username</label>
-                        <div ref={usernameInputDiv} className="ui fluid left icon input">
-                            <input
-                                ref={usernameInput}
-                                placeholder="Username"
-                                required
-                                onChange={e => checkUsername(e.target.value)}
-                            />
-                            <i aria-hidden="true" ref={leftIcon} className="close icon" />
-                        </div>
-                    </div>
+                    <Form.Input
+                        loading={usernameLoading}
+                        error={!usernameAvailable}
+                        required
+                        label="Username"
+                        placeholder="Username"
+                        value={username}
+                        onChange={e => {
+                            setUsername(e.target.value);
+                            if (regexUserName.test(e.target.value)) {
+                                setUsernameAvailable(true);
+                            } else {
+                                setUsernameAvailable(false)
+                            }
+                        }}
+                        fluid
+                        icon={usernameAvailable ? "check" : "close"}
+                        iconPosition="left"
+                    />
 
                     <CommonInputs
                         user={user}
@@ -216,7 +204,7 @@ function Signup() {
                         content="Signup"
                         type="submit"
                         color="blue"
-                        disabled={submitDisabled}
+                        disabled={submitDisabled || !usernameAvailable}
                     />
                 </Segment>
             </Form>
