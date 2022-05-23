@@ -12,7 +12,7 @@ function MyApp({ Component, pageProps }) {
             <Head>
                 <meta name="viewport" content="initial-scale=1.0, width=device-width" />
                 <meta charSet="UTF-8" />
-                <title>Mini Social Media</title>
+                <title>App</title>
             </Head>
             <Layout {...pageProps}>
                 <Component {...pageProps} />
@@ -26,11 +26,11 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
     let pageProps = {};
 
     const protectedRoutes = ctx.pathname === "/"
-    // ctx.pathname === "/[username]" ||
-    // ctx.pathname === "/notifications" ||
-    // ctx.pathname === "/post/[postId]" ||
-    // ctx.pathname === "/messages" ||
-    // ctx.pathname === "/search";
+    ctx.pathname === "/[username]" ||
+        ctx.pathname === "/notifications" ||
+        ctx.pathname === "/post/[postId]" ||
+        ctx.pathname === "/messages" ||
+        ctx.pathname === "/search";
 
     if (!token) {
         protectedRoutes && redirectUser(ctx, "/login");

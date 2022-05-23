@@ -6,8 +6,6 @@ const FollowerModel = require("../models/FollowerModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const isEmail = require("validator/lib/isEmail");
-const userPng =
-    "https://res.cloudinary.com/indersingh/image/upload/v1593464618/App/user_mklcpl.png";
 
 const regexUserName = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/;
 
@@ -61,7 +59,7 @@ router.post("/", async (req, res) => {
             email: email.toLowerCase(),
             username: username.toLowerCase(),
             password,
-            profilePicUrl: req.body.profilePicUrl || userPng
+            profilePicUrl: req.body.profilePicUrl
         });
 
         user.password = await bcrypt.hash(password, 10);
