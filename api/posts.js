@@ -228,4 +228,52 @@ router.post("/comment/:postId", authMiddleware, async (req, res) => {
     }
 });
 
+// DELETE A COMMENT
+
+router.delete("/:postId/:commentId", authMiddleware, async (req, res) => {
+    try {
+        const { postId, commentId } = req.params;
+        const { userId } = req;
+
+        const post = await PostModel.findById(postId);
+        if (!post) return res.status(404).send("Post not found");
+
+        const comment = post.comments.find(comment => comment._id === commentId);
+        if (!comment) {
+            return res.status(404).send("No Comment found");
+        }
+
+        const user = await UserModel.findById(userId);
+
+        const deleteComment = async () => {
+            const indexOf = post.comments.map(comment => comment._id).indexOf(commentId);
+
+            await post.comments.splice(indexOf, 1);
+
+            await post.save();
+
+            const postByUserId = post.user.toString();
+
+            if (postByUserId !== userId) {
+                await removeCommentNotification(postId, commentId, userId, postByUserId);
+            }
+
+            return res.status(200).send("Deleted Successfully");
+        };
+
+        if (comment.user.toString() !== userId) {
+            if (user.role === "root") {
+                await deleteComment();
+            } else {
+                return res.status(401).send("Unauthorized");
+            }
+        }
+
+        await deleteComment();
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send(`Server error`);
+    }
+});
+
 module.exports = router
