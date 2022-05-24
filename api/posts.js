@@ -171,4 +171,22 @@ router.put("/unlike/:postId", authMiddleware, async (req, res) => {
     }
 });
 
+// GET ALL LIKES OF A POST
+
+router.get("/like/:postId", authMiddleware, async (req, res) => {
+    try {
+        const { postId } = req.params;
+
+        const post = await PostModel.findById(postId).populate("likes.user");
+        if (!post) {
+            return res.status(404).send("No Post found");
+        }
+
+        return res.status(200).json(post.likes);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send(`Server error`);
+    }
+});
+
 module.exports = router
