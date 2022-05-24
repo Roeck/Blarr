@@ -2,6 +2,7 @@ import React, { createRef } from "react";
 import HeadTags from "./HeadTags";
 import Navbar from "./Navbar";
 import SideMenu from "./SideMenu";
+import Search from "./Search";
 import {
   Container,
   Visibility,
@@ -11,7 +12,6 @@ import {
   Divider,
   Segment,
   GridColumn,
-  Search
 } from "semantic-ui-react";
 import nprogress from "nprogress"
 import Router from "next/router"
