@@ -64,4 +64,38 @@ router.get("/:postId", authMiddleware, async (req, res) => {
     }
 })
 
+// DELETE POST
+
+router.delete("/:postId", authMiddleware, async (req, res) => {
+    try {
+        const { userId } = req;
+
+        const { postId } = req.params;
+
+        const post = await PostModel.findById(postId);
+        if (!post) {
+            return res.status(404).send("post not found");
+        }
+
+        const deletePost = async () => {
+            await post.remove();
+            return res.status(200).send("Post deleted Successfully");
+        };
+
+        if (post.user.toString() !== userId) {
+            const user = await UserModel.findById(userId);
+            if (user.role === "root") {
+                await deletePost();
+            } else {
+                return res.status(401).send("Unauthorized");
+            }
+        }
+
+        await deletePost();
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send(`Server error`);
+    }
+});
+
 module.exports = router
