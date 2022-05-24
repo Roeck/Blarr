@@ -25,8 +25,9 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
     const { token } = parseCookies(ctx);
     let pageProps = {};
 
-    const protectedRoutes = ctx.pathname === "/"
-    ctx.pathname === "/[username]" ||
+    const protectedRoutes =
+        ctx.pathname === "/" ||
+        ctx.pathname === "/[username]" ||
         ctx.pathname === "/notifications" ||
         ctx.pathname === "/post/[postId]" ||
         ctx.pathname === "/messages" ||
@@ -38,6 +39,9 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
     //
     else {
         try {
+            const getFollowingData =
+                ctx.pathname === "/notifications" || ctx.pathname === "/[username]";
+
             const res = await axios.get(`${baseUrl}/api/auth`, {
                 headers: { Authorization: token, getFollowingData },
                 params: { getFollowingData }
