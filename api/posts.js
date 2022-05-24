@@ -45,4 +45,23 @@ router.get("/", authMiddleware, async (req, res) => {
     }
 })
 
+// GET POST BY ID
+
+router.get("/:postId", authMiddleware, async (req, res) => {
+    try {
+        const post = await PostModel.findById(req.params.postId)
+            .populate("user")
+            .populate("comments.user")
+
+        if (!post) {
+            return res.status(404).send("Post not found")
+        }
+
+        return res.json(post)
+    } catch (error) {
+        console.error(error)
+        return res.status(500).send(`Server error`)
+    }
+})
+
 module.exports = router
