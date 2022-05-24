@@ -6,9 +6,9 @@ import CardPost from '../components/Post/CardPost'
 import { Segment } from 'semantic-ui-react'
 import { parseCookies } from 'nookies'
 import { NoPosts } from '../components/Layout/NoData'
+import { PostDeleteToastr } from "../components/Layout/Toastr";
 
-function Index({ user }) {
-
+function Index({ user, userFollowStats }) {
     useEffect(() => {
         document.title = `Welcome, ${user.name.split(" ")[0]}`
     }, [])
