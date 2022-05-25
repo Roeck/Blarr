@@ -13,6 +13,8 @@ import {
 import calculateTime from "../../utils/calculateTime";
 import Link from "next/link";
 import { deletePost } from "../../utils/postActions";
+import PostComments from "./PostComments";
+import CommentInputField from "./CommentInputField";
 
 function CardPost({ post, user, setPosts }) {
 
@@ -20,9 +22,13 @@ function CardPost({ post, user, setPosts }) {
 
     const [showModal, setShowModal] = useState(false);
 
+    const [comments, setComments] = useState(post.comments);
+
     const addPropsToModal = {
         post,
         user,
+        comments,
+        setComments
     };
 
     return (
@@ -90,6 +96,41 @@ function CardPost({ post, user, setPosts }) {
                         >
                             {post.text}
                         </Card.Description>
+
+                        <Icon name="comment outline" style={{ marginLeft: "7px" }} color="blue" />
+
+                        {comments.length > 0 &&
+                            comments.map(
+                                (comment, i) =>
+                                    i < 3 && (
+                                        <PostComments
+                                            key={comment._id}
+                                            comment={comment}
+                                            postId={post._id}
+                                            user={user}
+                                            setComments={setComments}
+                                        />
+                                    )
+                            )}
+
+                        {comments.length > 3 && (
+                            <Button
+                                content="View More"
+                                color="teal"
+                                basic
+                                circular
+                                onClick={() => setShowModal(true)}
+                            />
+                        )}
+
+                        <Divider hidden />
+
+                        <CommentInputField
+                            user={user}
+                            postId={post._id}
+                            setComments={setComments}
+                        />
+
                     </Card.Content>
                 </Card>
             </Segment>
