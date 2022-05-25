@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import baseUrl from '../utils/baseUrl'
 import CreatePost from '../components/Post/CreatePost'
@@ -8,12 +8,29 @@ import { parseCookies } from 'nookies'
 import { NoPosts } from '../components/Layout/NoData'
 import { PostDeleteToastr } from "../components/Layout/Toastr";
 
-function Index({ user, userFollowStats }) {
+function Index({ user, postsData }) {
+    const [posts, setPosts] = useState(postsData || []);
+
     useEffect(() => {
         document.title = `Welcome, ${user.name.split(" ")[0]}`
     }, [])
 
-    return <div>Homepage</div>
+    return (
+        <>
+            <Segment>
+                <CreatePost user={user} setPosts={setPosts} />
+                {posts.map(post => (
+                    <CardPost
+                        key={post._id}
+                        post={post}
+                        user={user}
+                        setPosts={setPosts}
+                        setShowToastr={setShowToastr}
+                    />
+                ))}
+            </Segment>
+        </>
+    )
 }
 
 Index.getInitialProps = async ctx => {
