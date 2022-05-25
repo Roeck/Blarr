@@ -4,6 +4,7 @@ const authMiddleware = require("../middleware/authMiddleware")
 const UserModel = require("../models/UserModel")
 const PostModel = require("../models/PostModel")
 const FollowerModel = require("../models/FollowerModel")
+const uuid = require("uuid").v4;
 
 // CREATE A POST
 
