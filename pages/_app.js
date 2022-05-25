@@ -5,6 +5,7 @@ import baseUrl from "../utils/baseUrl";
 import { redirectUser } from "../utils/authUser";
 import Layout from "../components/Layout/Layout";
 import "semantic-ui-css/semantic.min.css";
+import 'react-toastify/dist/ReactToastify.css';
 
 function MyApp({ Component, pageProps }) {
     return (

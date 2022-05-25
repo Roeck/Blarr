@@ -16,7 +16,7 @@ import { deletePost } from "../../utils/postActions";
 import PostComments from "./PostComments";
 import CommentInputField from "./CommentInputField";
 
-function CardPost({ post, user, setPosts }) {
+function CardPost({ post, user, setPosts, setShowToastr }) {
 
     const [error, setError] = useState(null);
 
@@ -69,9 +69,9 @@ function CardPost({ post, user, setPosts }) {
 
                                     <Button
                                         color="red"
-                                        icon="trash"
+                                        icon="trash alternate"
                                         content="Delete"
-                                        onClick={() => deletePost(post._id, setPosts)}
+                                        onClick={() => deletePost(post._id, setPosts, setShowToastr)}
                                     />
                                 </Popup>
                             </>
