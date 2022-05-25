@@ -25,7 +25,6 @@ function Index({ user, postsData }) {
                         post={post}
                         user={user}
                         setPosts={setPosts}
-                        setShowToastr={setShowToastr}
                     />
                 ))}
             </Segment>
