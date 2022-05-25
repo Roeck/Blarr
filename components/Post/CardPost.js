@@ -10,29 +10,46 @@ import {
     Header,
     Modal
 } from "semantic-ui-react";
-import calculateTime from "../../utils/calculateTime";
-import Link from "next/link";
-import { deletePost } from "../../utils/postActions";
 import PostComments from "./PostComments";
 import CommentInputField from "./CommentInputField";
+import calculateTime from "../../utils/calculateTime";
+import Link from "next/link";
+import { deletePost, likePost } from "../../utils/postActions";
 
 function CardPost({ post, user, setPosts, setShowToastr }) {
+    const [likes, setLikes] = useState(post.likes);
+
+    const isLiked =
+        likes.length > 0 && likes.filter(like => like.user === user._id).length > 0;
+
+    const [comments, setComments] = useState(post.comments);
 
     const [error, setError] = useState(null);
 
     const [showModal, setShowModal] = useState(false);
 
-    const [comments, setComments] = useState(post.comments);
-
     const addPropsToModal = {
         post,
         user,
+        setLikes,
+        likes,
+        isLiked,
         comments,
         setComments
     };
 
     return (
         <>
+            {showModal && (
+                <Modal
+                    open={showModal}
+                    closeIcon
+                    closeOnDimmerClick
+                    onClose={() => setShowModal(false)}
+                >
+                </Modal>
+            )}
+
             <Segment basic>
                 <Card color="teal" fluid>
                     {post.picUrl && (
@@ -69,7 +86,7 @@ function CardPost({ post, user, setPosts, setShowToastr }) {
 
                                     <Button
                                         color="red"
-                                        icon="trash alternate"
+                                        icon="trash"
                                         content="Delete"
                                         onClick={() => deletePost(post._id, setPosts, setShowToastr)}
                                     />
@@ -96,6 +113,23 @@ function CardPost({ post, user, setPosts, setShowToastr }) {
                         >
                             {post.text}
                         </Card.Description>
+                    </Card.Content>
+
+                    <Card.Content extra>
+                        <Icon
+                            name={isLiked ? "heart" : "heart outline"}
+                            color="red"
+                            style={{ cursor: "pointer" }}
+                            onClick={() =>
+                                likePost(post._id, user._id, setLikes, isLiked ? false : true)
+                            }
+                        />
+
+                        {likes.length > 0 && (
+                            <span className="spanLikesList">
+                                {`${likes.length} ${likes.length === 1 ? "like" : "likes"}`}
+                            </span>
+                        )}
 
                         <Icon name="comment outline" style={{ marginLeft: "7px" }} color="blue" />
 
@@ -130,7 +164,6 @@ function CardPost({ post, user, setPosts, setShowToastr }) {
                             postId={post._id}
                             setComments={setComments}
                         />
-
                     </Card.Content>
                 </Card>
             </Segment>
