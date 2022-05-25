@@ -13,6 +13,8 @@ import {
 import PostComments from "./PostComments";
 import CommentInputField from "./CommentInputField";
 import LikesList from "./LikesList";
+import ImageModal from "./ImageModal";
+import NoImageModal from "./NoImageModal";
 import calculateTime from "../../utils/calculateTime";
 import Link from "next/link";
 import { deletePost, likePost } from "../../utils/postActions";
@@ -48,6 +50,13 @@ function CardPost({ post, user, setPosts, setShowToastr }) {
                     closeOnDimmerClick
                     onClose={() => setShowModal(false)}
                 >
+                    <Modal.Content>
+                        {post.picUrl ? (
+                            <ImageModal {...addPropsToModal} />
+                        ) : (
+                            <NoImageModal {...addPropsToModal} />
+                        )}
+                    </Modal.Content>
                 </Modal>
             )}
 
