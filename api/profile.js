@@ -249,5 +249,26 @@ router.post("/settings/password", authMiddleware, async (req, res) => {
     }
 });
 
+// UPDATE MESSAGE POPUP SETTINGS
+router.post("/settings/messagePopup", authMiddleware, async (req, res) => {
+    try {
+        const user = await UserModel.findById(req.userId);
+
+        if (user.newMessagePopup) {
+            user.newMessagePopup = false;
+        }
+        //
+        else {
+            user.newMessagePopup = true;
+        }
+
+        await user.save();
+        return res.status(200).send("updated");
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send("Server Error");
+    }
+});
+
 
 module.exports = router;
