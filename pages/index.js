@@ -6,11 +6,16 @@ import CardPost from '../components/Post/CardPost'
 import { Segment } from 'semantic-ui-react'
 import { parseCookies } from 'nookies'
 import { NoPosts } from '../components/Layout/NoData'
-import { PostDeleteToastr } from "../components/Layout/Toastr";
+import { PostDeleteToastr } from "../components/Layout/Toastr"
+import { PlaceHolderPosts, EndMessage } from '../components/Layout/PlaceHolderGroup'
+import InfiniteScroll from 'react-infinite-scroll-component'
+import cookie from 'js-cookie'
 
-function Index({ user, postsData }) {
+function Index({ user, postsData, errorLoading }) {
     const [posts, setPosts] = useState(postsData || []);
     const [showToastr, setShowToastr] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
+    const [pageNumber, setPageNumber] = useState(2);
 
     useEffect(() => {
         document.title = `Welcome, ${user.name.split(" ")[0]}`
@@ -20,37 +25,64 @@ function Index({ user, postsData }) {
         showToastr && setTimeout(() => setShowToastr(false), 3000);
     }, [showToastr]);
 
+
+    const fetchDataOnScroll = async () => {
+        try {
+            const res = await Axios.get("/", { params: { pageNumber } });
+
+            if (res.data.length === 0) setHasMore(false);
+
+            setPosts(prev => [...prev, ...res.data]);
+            setPageNumber(prev => prev + 1);
+        } catch (error) {
+            alert("Error fetching Posts");
+        }
+    };
+
     return (
         <>
             {showToastr && <PostDeleteToastr />}
             <Segment>
                 <CreatePost user={user} setPosts={setPosts} />
-                {posts.map(post => (
-                    <CardPost
-                        key={post._id}
-                        post={post}
-                        user={user}
-                        setPosts={setPosts}
-                        setShowToastr={setShowToastr}
-                    />
-                ))}
+                {posts.length === 0 || errorLoading ? (
+                    <NoPosts />
+                ) : (
+                    <InfiniteScroll
+                        hasMore={hasMore}
+                        next={fetchDataOnScroll}
+                        loader={<PlaceHolderPosts />}
+                        endMessage={<EndMessage />}
+                        dataLength={posts.length}
+                    >
+                        {posts.map(post => (
+                            <CardPost
+                                key={post._id}
+                                post={post}
+                                user={user}
+                                setPosts={setPosts}
+                                setShowToastr={setShowToastr}
+                            />
+                        ))}
+                    </InfiniteScroll>
+                )}
             </Segment>
         </>
     )
 }
 
-Index.getInitialProps = async ctx => {
+export const getServerSideProps = async ctx => {
     try {
-        const { token } = parseCookies(ctx)
+        const { token } = parseCookies(ctx);
 
         const res = await axios.get(`${baseUrl}/api/posts`, {
-            headers: { Authorization: token }
-        })
+            headers: { Authorization: token },
+            params: { pageNumber: 1 }
+        });
 
-        return { postData: res.data }
+        return { props: { postsData: res.data } };
     } catch (error) {
-        return { errorLoading: true }
+        return { props: { errorLoading: true } };
     }
-}
+};
 
 export default Index
