@@ -61,7 +61,7 @@ function CardPost({ post, user, setPosts, setShowToastr }) {
             )}
 
             <Segment basic>
-                <Card color="teal" fluid>
+                <Card color="violet" fluid>
                     {post.picUrl && (
                         <Image
                             src={post.picUrl}
@@ -165,7 +165,7 @@ function CardPost({ post, user, setPosts, setShowToastr }) {
                         {comments.length > 3 && (
                             <Button
                                 content="View More"
-                                color="teal"
+                                color="violet"
                                 basic
                                 circular
                                 onClick={() => setShowModal(true)}
