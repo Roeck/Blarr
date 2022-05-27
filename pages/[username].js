@@ -10,6 +10,7 @@ import CardPost from "../components/Post/CardPost";
 import { PlaceHolderPosts } from "../components/Layout/PlaceHolderGroup";
 import ProfileMenuTabs from "../components/Profile/ProfileMenuTabs";
 import ProfileHeader from "../components/Profile/ProfileHeader";
+import Followers from "../components/Profile/Followers";
 import { PostDeleteToastr } from "../components/Layout/Toastr";
 
 function ProfilePage({
