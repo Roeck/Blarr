@@ -7,6 +7,9 @@ import { NoProfile } from '../components/Layout/NoData'
 import cookie from 'js-cookie'
 import { Grid } from 'semantic-ui-react'
 import ProfileMenuTabs from '../components/Profile/ProfileMenuTabs'
+import CardPost from "../components/Post/CardPost"
+import { PlaceHolderPosts } from '../components/Layout/PlaceHolderGroup'
+import { PostDeleteToastr } from '../components/Layout/Toastr'
 
 function ProfilePage({
     profile,
@@ -20,6 +23,7 @@ function ProfilePage({
 
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [showToastr, setShowToastr] = useState(false);
 
     const [activeItem, setActiveItem] = useState("profile");
     const handleItemClick = clickedTab => setActiveItem(clickedTab);
@@ -31,21 +35,49 @@ function ProfilePage({
     if (errorLoading) return <NoProfile />
 
     useEffect(() => {
-        (async () => {
+        const getPosts = async () => {
             setLoading(true);
-
             try {
-                const { username } = router.query;
-                const res = await Axios.get(`/posts/${username}`);
+                const { username } = router.query
+                const token = cookie.get("token")
+
+                const res = await axios.get(`${baseUrl}/api/profile/posts/${username}`, {
+                    headers: { Authorization: token }
+                });
 
                 setPosts(res.data);
             } catch (error) {
-                alert("Error Loading Posts");
+                alert("Error loading posts")
             }
-
             setLoading(false);
-        })();
-    }, [router.query.username]);
+        }
+
+        getPosts();
+    }, []);
+
+    useEffect(() => {
+        showToastr && setTimeout(() => setShowToastr(false), 4000);
+    }, [showToastr]);
+
+    return (
+        <>
+            {showToastr && <PostDeleteToastr />}
+            <Grid stackable>
+                <Grid.Row>
+                    <Grid.Column>
+                        <ProfileMenuTabs
+                            activeItem={activeItem}
+                            handleItemClick={handleItemClick}
+                            followersLength={followersLength}
+                            followingLength={followingLength}
+                            ownAccount={ownAccount}
+                            loggedUserFollowStats={loggedUserFollowStats}
+                        />
+                    </Grid.Column>
+                </Grid.Row>
+            </Grid>
+        </>
+    )
 }
 
 ProfilePage.getInitialProps = async (ctx) => {
