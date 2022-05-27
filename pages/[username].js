@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import baseUrl from "../utils/baseUrl";
 import { parseCookies } from "nookies";
-import cookie from 'js-cookie';
+import cookie from "js-cookie";
 import { Grid } from "semantic-ui-react";
 import { NoProfilePosts, NoProfile } from "../components/Layout/NoData";
 import CardPost from "../components/Post/CardPost";
@@ -11,6 +11,7 @@ import { PlaceHolderPosts } from "../components/Layout/PlaceHolderGroup";
 import ProfileMenuTabs from "../components/Profile/ProfileMenuTabs";
 import ProfileHeader from "../components/Profile/ProfileHeader";
 import Followers from "../components/Profile/Followers";
+import Following from "../components/Profile/Following";
 import { PostDeleteToastr } from "../components/Layout/Toastr";
 
 function ProfilePage({
