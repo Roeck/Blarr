@@ -5,6 +5,8 @@ import baseUrl from '../utils/baseUrl'
 import { parseCookies } from 'nookies'
 import { NoProfile } from '../components/Layout/NoData'
 import cookie from 'js-cookie'
+import { Grid } from 'semantic-ui-react'
+import ProfileMenuTabs from '../components/Profile/ProfileMenuTabs'
 
 function ProfilePage({
     profile,
@@ -18,6 +20,13 @@ function ProfilePage({
 
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(false);
+
+    const [activeItem, setActiveItem] = useState("profile");
+    const handleItemClick = clickedTab => setActiveItem(clickedTab);
+
+    const [loggedUserFollowStats, setUserFollowStats] = useState(userFollowStats);
+
+    const ownAccount = profile.user._id === user._id;
 
     if (errorLoading) return <NoProfile />
 
