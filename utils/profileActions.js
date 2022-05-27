@@ -2,6 +2,7 @@ import axios from "axios";
 import baseUrl from "./baseUrl";
 import catchErrors from "./catchErrors";
 import cookie from "js-cookie";
+import Router from "next/router"
 
 export const Axios = axios.create({
     baseURL: `${baseUrl}/api/profile`,
