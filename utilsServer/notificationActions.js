@@ -58,6 +58,36 @@ const removeLikeNotification = async (userId, postId, userToNotifyId) => {
     }
 };
 
+const newCommentNotification = async (
+    postId,
+    commentId,
+    userId,
+    userToNotifyId,
+    text
+) => {
+    try {
+        const userToNotify = await NotificationModel.findOne({ user: userToNotifyId });
+
+        const newNotification = {
+            type: "newComment",
+            user: userId,
+            post: postId,
+            commentId,
+            text,
+            date: Date.now()
+        };
+
+        await userToNotify.notifications.unshift(newNotification);
+
+        await userToNotify.save();
+
+        await setNotificationToUnread(userToNotifyId);
+        return;
+    } catch (error) {
+        console.error(error);
+    }
+};
+
 module.exports = {
     newLikeNotification,
     removeLikeNotification,
