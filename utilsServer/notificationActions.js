@@ -36,3 +36,29 @@ const newLikeNotification = async (userId, postId, userToNotifyId) => {
         console.error(error);
     }
 };
+
+const removeLikeNotification = async (userId, postId, userToNotifyId) => {
+    try {
+        await NotificationModel.findOneAndUpdate(
+            { user: userToNotifyId },
+            {
+                $pull: {
+                    notifications: {
+                        type: "newLike",
+                        user: userId,
+                        post: postId
+                    }
+                }
+            }
+        );
+
+        return;
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+module.exports = {
+    newLikeNotification,
+    removeLikeNotification,
+};
