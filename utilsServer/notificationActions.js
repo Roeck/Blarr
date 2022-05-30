@@ -15,3 +15,24 @@ const setNotificationToUnread = async userId => {
         console.error(error);
     }
 };
+
+const newLikeNotification = async (userId, postId, userToNotifyId) => {
+    try {
+        const userToNotify = await NotificationModel.findOne({ user: userToNotifyId });
+
+        const newNotification = {
+            type: "newLike",
+            user: userId,
+            post: postId,
+            date: Date.now()
+        };
+
+        await userToNotify.notifications.unshift(newNotification);
+        await userToNotify.save();
+
+        await setNotificationToUnread(userToNotifyId);
+        return;
+    } catch (error) {
+        console.error(error);
+    }
+};
