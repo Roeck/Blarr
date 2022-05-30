@@ -88,6 +88,28 @@ const newCommentNotification = async (
     }
 };
 
+const removeCommentNotification = async (postId, commentId, userId, userToNotifyId) => {
+    try {
+        await NotificationModel.findOneAndUpdate(
+            { user: userToNotifyId },
+            {
+                $pull: {
+                    notifications: {
+                        type: "newComment",
+                        user: userId,
+                        post: postId,
+                        commentId: commentId
+                    }
+                }
+            }
+        );
+
+        return;
+    } catch (error) {
+        console.error(error);
+    }
+};
+
 module.exports = {
     newLikeNotification,
     removeLikeNotification,
