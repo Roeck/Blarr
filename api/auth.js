@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const UserModel = require("../models/UserModel");
 const FollowerModel = require("../models/FollowerModel");
+const ChatModel = require("../models/ChatModel");
 const NotificationModel = require("../models/NotificationModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
@@ -47,10 +48,10 @@ router.post("/", async (req, res) => {
             return res.status(401).send("Invalid Credentials");
         }
 
-        const notificationModel = await NotificationModel.findOne({ user: user._id });
+        const chatModel = await ChatModel.findOne({ user: user._id });
 
-        if (!notificationModel) {
-            await new NotificationModel({ user: user._id, notifications: [] }).save();
+        if (!chatModel) {
+            await new chatModel({ user: user._id, chats: [] }).save();
         }
 
         const payload = { userId: user._id };
