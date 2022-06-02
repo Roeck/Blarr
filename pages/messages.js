@@ -68,5 +68,6 @@ function Messages({ chatsData }) {
             return { errorLoading: true };
         }
     };
+}
 
-    export default Messages;
+export default Messages;
