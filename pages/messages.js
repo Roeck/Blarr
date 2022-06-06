@@ -55,7 +55,7 @@ function Messages({ chatsData }) {
         </>
     )
 
-    Messages.getInitialProps = async ctx => {
+    Messages.getServerSideProps = async ctx => {
         try {
             const { token } = parseCookies(ctx);
 
