@@ -9,7 +9,7 @@ import { NoPosts } from '../components/Layout/NoData'
 import { PostDeleteToastr } from "../components/Layout/Toastr"
 import { PlaceHolderPosts, EndMessage } from '../components/Layout/PlaceHolderGroup'
 import InfiniteScroll from 'react-infinite-scroll-component'
-import cookie from 'js-cookie'
+import { Axios } from '../utils/postActions'
 
 function Index({ user, postsData, errorLoading }) {
     const [posts, setPosts] = useState(postsData || []);
