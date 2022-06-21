@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import baseUrl from "../utils/baseUrl";
 import { parseCookies } from "nookies";
-import cookie from "js-cookie";
+import { Axios } from "../utils/profileActions";
 import { Grid } from "semantic-ui-react";
 import { NoProfilePosts, NoProfile } from "../components/Layout/NoData";
 import CardPost from "../components/Post/CardPost";
@@ -35,7 +35,7 @@ function ProfilePage({
 
     const [loggedUserFollowStats, setUserFollowStats] = useState(userFollowStats);
 
-    const ownAccount = profile.user._id === user._id;
+    const ownAccount = profile?.user._id === user._id;
 
     if (errorLoading) return <NoProfile />;
 
@@ -93,7 +93,6 @@ function ProfilePage({
                                 ) : posts.length > 0 ? (
                                     posts.map(post => (
                                         <CardPost
-                                            socket={socket}
                                             key={post._id}
                                             post={post}
                                             user={user}

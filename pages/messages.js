@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
+import cookie from "js-cookie";
 import axios from "axios";
 import baseUrl from "../utils/baseUrl";
 import { parseCookies } from "nookies";
@@ -8,7 +9,15 @@ import { Segment, Header, Divider, Comment, Grid } from "semantic-ui-react";
 import Chat from "../components/Chats/Chat";
 import { NoMessages } from "../components/Layout/NoData";
 
-function Messages({ chatsData }) {
+const setMessageToUnread = async () => {
+    await axios.post(
+        `${baseUrl}/api/chats`,
+        {},
+        { headers: { Authorization: cookie.get("token") } }
+    );
+};
+
+function Messages({ chatsData, user }) {
     const [chats, setChats] = useState(chatsData)
     const router = useRouter()
 
@@ -54,20 +63,20 @@ function Messages({ chatsData }) {
             </Segment>
         </>
     )
-
-    Messages.getServerSideProps = async ctx => {
-        try {
-            const { token } = parseCookies(ctx);
-
-            const res = await axios.get(`${baseUrl}/api/chats`, {
-                headers: { Authorization: token }
-            });
-
-            return { chatsData: res.data };
-        } catch (error) {
-            return { errorLoading: true };
-        }
-    };
 }
+
+export const getServerSideProps = async ctx => {
+    try {
+        const { token } = parseCookies(ctx);
+
+        const res = await axios.get(`${baseUrl}/api/chats`, {
+            headers: { Authorization: token }
+        });
+
+        return { props: { chatsData: res.data } };
+    } catch (error) {
+        return { props: { errorLoading: true } };
+    }
+};
 
 export default Messages;
