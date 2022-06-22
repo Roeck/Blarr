@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import { Segment, Header, Divider, Comment, Grid } from "semantic-ui-react";
 import Chat from "../components/Chats/Chat";
 import { NoMessages } from "../components/Layout/NoData";
+import Message from "../components/Messages/Message";
 
 const setMessageToUnread = async () => {
     await axios.post(
@@ -27,7 +28,7 @@ function Messages({ chatsData, user }) {
     // This ref is for persisting the state of query string in url throughout re-renders. This ref is the value of query string inside url
     const openChatId = useRef("");
 
-    //CONNECTION useEffect
+    // CONNECTION useEffect
     useEffect(() => {
         if (user.unreadMessage) setMessageToUnread();
 
@@ -60,6 +61,21 @@ function Messages({ chatsData, user }) {
                     style={{ cursor: "pointer" }}
                 />
                 <Divider hidden />
+                <>
+                    {messages.length > 0 && (
+                        <>
+                            {messages.map((message, i) => (
+                                <Message
+                                    key={i}
+                                    message={message}
+                                    user={user}
+                                    setMessages={setMessages}
+                                    messagesWith={openChatId.current}
+                                />
+                            ))}
+                        </>
+                    )}
+                </>
             </Segment>
         </>
     )
