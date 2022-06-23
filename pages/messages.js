@@ -5,9 +5,12 @@ import axios from "axios";
 import baseUrl from "../utils/baseUrl";
 import { parseCookies } from "nookies";
 import { useRouter } from "next/router";
-import { Segment, Header, Divider, Comment, Grid } from "semantic-ui-react";
+import { Segment, Header, Divider, Comment, Grid, Icon } from "semantic-ui-react";
 import Chat from "../components/Chats/Chat";
+import ChatListSearch from "../components/Chats/ChatListSearch";
 import { NoMessages } from "../components/Layout/NoData";
+import Message from "../components/Messages/Message";
+import Banner from "../components/Messages/Banner";
 
 const setMessageToUnread = async () => {
     await axios.post(
@@ -23,6 +26,9 @@ function Messages({ chatsData, user }) {
 
     const socket = useRef();
     const [connectedUsers, setConnectedUsers] = useState([]);
+
+    const [messages, setMessages] = useState([])
+    const [bannerData, setBannerData] = useState({ name: "", profilePicUrl: "" })
 
     // This ref is for persisting the state of query string in url throughout re-renders. This ref is the value of query string inside url
     const openChatId = useRef("");
@@ -50,6 +56,44 @@ function Messages({ chatsData, user }) {
         }
     }, []);
 
+    // LOAD MESSAGES useEffect
+    useEffect(() => {
+        const loadMessages = () => {
+            socket.current.emit("loadMessages", {
+                userId: user._id,
+                messagesWith: router.query.message
+            });
+
+            socket.current.on("messagesLoaded", async ({ chat }) => {
+                setMessages(chat.messages);
+                setBannerData({
+                    name: chat.messagesWith.name,
+                    profilePicUrl: chat.messagesWith.profilePicUrl
+                });
+
+                openChatId.current = chat.messagesWith._id;
+            });
+        };
+
+        if (socket.current) {
+            loadMessages();
+        }
+    }, [router.query.message]);
+
+    const deleteChat = async messagesWith => {
+        try {
+            await axios.delete(`${baseUrl}/api/chats/${messagesWith}`, {
+                headers: { Authorization: cookie.get("token") }
+            });
+
+            setChats(prev => prev.filter(chat => chat.messagesWith !== messagesWith));
+            router.push("/messages", undefined, { shallow: true });
+            openChatId.current = "";
+        } catch (error) {
+            alert("Error deleting chat");
+        }
+    };
+
     return (
         <>
             <Segment padded basic size="large" style={{ marginTop: "5px" }}>
@@ -60,9 +104,71 @@ function Messages({ chatsData, user }) {
                     style={{ cursor: "pointer" }}
                 />
                 <Divider hidden />
+
+                <div style={{ marginBottom: "10px" }}>
+                    <ChatListSearch chats={chats} setChats={setChats} />
+                </div>
+
+                {chats.length > 0 ? (
+                    <>
+                        <Grid stackable>
+                            <Grid.Column width={4}>
+                                <Comment.Group size="big">
+                                    <Segment raised style={{ overflow: "auto", maxHeight: "32rem" }}>
+                                        {chats.map(chat => (
+                                            <Chat
+                                                key={chat.messagesWith}
+                                                chat={chat}
+                                                connectedUsers={connectedUsers}
+                                                deleteChat={deleteChat}
+                                            />
+                                        ))}
+                                    </Segment>
+                                </Comment.Group>
+                            </Grid.Column>
+
+                            <Grid.Column width={12}>
+                                {router.query.message && (
+                                    <>
+                                        <div
+                                            style={{
+                                                overflow: "auto",
+                                                overflowX: "hidden",
+                                                maxHeight: "35rem",
+                                                height: "35rem",
+                                                backgroundColor: "whitesmoke"
+                                            }}
+                                        >
+                                            <>
+                                                {messages.length > 0 && (
+                                                    <>
+                                                        <div style={{ position: "sticky", top: "0" }}>
+                                                            <Banner bannerData={bannerData} />
+                                                        </div>
+                                                        {messages.map((message, i) => (
+                                                            <Message
+                                                                key={i}
+                                                                message={message}
+                                                                user={user}
+                                                                setMessages={setMessages}
+                                                                messagesWith={openChatId.current}
+                                                            />
+                                                        ))}
+                                                    </>
+                                                )}
+                                            </>
+                                        </div>
+                                    </>
+                                )}
+                            </Grid.Column>
+                        </Grid>
+                    </>
+                ) : (
+                    <NoMessages />
+                )}
             </Segment>
         </>
-    )
+    );
 }
 
 export const getServerSideProps = async ctx => {
