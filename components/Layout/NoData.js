@@ -24,7 +24,7 @@ export const NoMessages = () => (
         info
         icon="telegram plane"
         header="Sorry"
-        content="You have not messaged anyone yet.Search above to message someone!"
+        content="You have not messaged anyone yet. Search above to message someone!"
     />
 );
 

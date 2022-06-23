@@ -95,6 +95,35 @@ function Messages({ chatsData, user }) {
         }
     };
 
+    const sendMsg = msg => {
+        if (socket.current) {
+            socket.current.emit("sendNewMsg", {
+                userId: user._id,
+                msgSendToUserId: openChatId.current,
+                msg
+            });
+        }
+    };
+
+    // Confirm messages are sent and received
+    useEffect(() => {
+        if (socket.current) {
+            socket.current.on("msgSent", ({ newMsg }) => {
+                if (newMsg.receiver === openChatId.current) {
+                    setMessages(prev => [...prev, newMsg])
+
+                    setChats(prev => {
+                        const previousChat = prev.find(chat => chat.messagesWith === newMsg.receiver)
+                        previousChat.lastMessage = newMsg.msg
+                        previousChat.date = newMsg.date
+
+                        return [...prev]
+                    })
+                }
+            })
+        }
+    }, [])
+
     return (
         <>
             <Segment padded basic size="large" style={{ marginTop: "5px" }}>
@@ -149,6 +178,7 @@ function Messages({ chatsData, user }) {
                                                         {messages.map((message, i) => (
                                                             <Message
                                                                 key={i}
+                                                                bannerProfilePic={bannerData.profilePicUrl}
                                                                 message={message}
                                                                 user={user}
                                                                 setMessages={setMessages}
@@ -159,11 +189,7 @@ function Messages({ chatsData, user }) {
                                                 )}
                                             </>
                                         </div>
-                                        <MessageInputField
-                                            socket={socket}
-                                            user={user}
-                                            messagesWith={openChatId.current}
-                                        />
+                                        <MessageInputField sendMsg={sendMsg} />
                                     </>
                                 )}
                             </Grid.Column>
