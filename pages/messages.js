@@ -10,6 +10,7 @@ import Chat from "../components/Chats/Chat";
 import ChatListSearch from "../components/Chats/ChatListSearch";
 import { NoMessages } from "../components/Layout/NoData";
 import Message from "../components/Messages/Message";
+import MessageInputField from "../components/Messages/MessageInputField";
 import Banner from "../components/Messages/Banner";
 
 const setMessageToUnread = async () => {
@@ -158,6 +159,11 @@ function Messages({ chatsData, user }) {
                                                 )}
                                             </>
                                         </div>
+                                        <MessageInputField
+                                            socket={socket}
+                                            user={user}
+                                            messagesWith={openChatId.current}
+                                        />
                                     </>
                                 )}
                             </Grid.Column>
