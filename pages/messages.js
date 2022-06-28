@@ -12,6 +12,7 @@ import { NoMessages } from "../components/Layout/NoData";
 import Message from "../components/Messages/Message";
 import MessageInputField from "../components/Messages/MessageInputField";
 import Banner from "../components/Messages/Banner";
+import getUserInfo from "../utils/getUserInfo";
 
 const setMessageToUnread = async () => {
     await axios.post(
@@ -74,11 +75,17 @@ function Messages({ chatsData, user }) {
 
                 openChatId.current = chat.messagesWith._id;
             });
+
+            socket.current.on('noChatFound', async () => {
+                const { name, profilePicUrl } = await getUserInfo(router.query.message);
+
+                setBannerData({ name, profilePicUrl })
+                setMessages([])
+                openChatId.current = router.query.message
+            })
         };
 
-        if (socket.current) {
-            loadMessages();
-        }
+        if (socket.current && router.query.message) loadMessages();
     }, [router.query.message]);
 
     const deleteChat = async messagesWith => {
@@ -169,25 +176,24 @@ function Messages({ chatsData, user }) {
                                                 backgroundColor: "whitesmoke"
                                             }}
                                         >
-                                            <>
-                                                {messages.length > 0 && (
-                                                    <>
-                                                        <div style={{ position: "sticky", top: "0" }}>
-                                                            <Banner bannerData={bannerData} />
-                                                        </div>
-                                                        {messages.map((message, i) => (
-                                                            <Message
-                                                                key={i}
-                                                                bannerProfilePic={bannerData.profilePicUrl}
-                                                                message={message}
-                                                                user={user}
-                                                                setMessages={setMessages}
-                                                                messagesWith={openChatId.current}
-                                                            />
-                                                        ))}
-                                                    </>
-                                                )}
-                                            </>
+                                            <div style={{ position: "sticky", top: "0" }}>
+                                                <Banner bannerData={bannerData} />
+                                            </div>
+                                            {messages.length > 0 && (
+                                                <>
+
+                                                    {messages.map((message, i) => (
+                                                        <Message
+                                                            key={i}
+                                                            bannerProfilePic={bannerData.profilePicUrl}
+                                                            message={message}
+                                                            user={user}
+                                                            setMessages={setMessages}
+                                                            messagesWith={openChatId.current}
+                                                        />
+                                                    ))}
+                                                </>
+                                            )}
                                         </div>
                                         <MessageInputField sendMsg={sendMsg} />
                                     </>
