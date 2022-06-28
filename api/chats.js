@@ -50,4 +50,23 @@ router.get("/user/:userToFindId", authMiddleware, async (req, res) => {
     }
 });
 
+// DELETE A CHAT
+
+router.delete(`/:messagesWith`, authMiddleware, async (req, res) => {
+    try {
+        const { userId } = req;
+        const { messagesWith } = req.params;
+
+        await ChatModel.findOneAndUpdate(
+            { user: userId },
+            { $pull: { chats: { messagesWith } } }
+        );
+        return res.status(200).send("Chat deleted");
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send("Server Error");
+    }
+});
+
 module.exports = router;
