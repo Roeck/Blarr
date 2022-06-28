@@ -42,10 +42,15 @@ io.on("connection", socket => {
 
     socket.on("sendNewMsg", async ({ userId, msgSendToUserId, msg }) => {
         const { newMsg, error } = await sendMsg(userId, msgSendToUserId, msg);
+        const receiverSocket = findConnectedUser(msgSendToUserId)
 
-        if (!error) {
-            socket.emit("msgSent", { newMsg });
+        if (receiverSocket) {
+            io.to(receiverSocket.socketId).emit('newMsgReceived', { newMsg })
+        } else {
+            await setMsgToUnread(msgSendToUserId);
         }
+
+        !error && socket.emit("msgSent", { newMsg });
     });
 
     socket.on("disconnect", () => removeUser(socket.id));

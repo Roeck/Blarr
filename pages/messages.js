@@ -128,6 +128,46 @@ function Messages({ chatsData, user }) {
                     })
                 }
             })
+
+            socket.current.on('newMsgReceived', async ({ newMsg }) => {
+                // When chat is open in the browser:
+                if (newMsg.sender === openChatId.current) {
+                    setMessages(prev => [...prev, newMsg])
+                    setChats(prev => {
+                        const previousChat = prev.find(chat => chat.messagesWith === newMsg.sender)
+                        previousChat.lastMessage = newMsg.msg;
+                        previousChat.date = newMsg.date
+
+                        return [...prev]
+                    })
+                }
+                else {
+                    const ifPreviouslyMessaged = chats.filter(chat => chat.messagesWith === newMsg.sender).length > 0
+
+                    if (ifPreviouslyMessaged) {
+                        setChats(prev => {
+                            const previousChat = prev.find(chat => chat.messagesWith === newMsg.sender)
+                            previousChat.lastMessage = newMsg.msg;
+                            previousChat.date = newMsg.date
+
+                            return [...prev]
+                        })
+                    }
+
+                    else {
+                        const { name, profilePicUrl } = await getUserInfo(newMsg.sender)
+
+                        const newChat = {
+                            messagesWith: newMsg.sender,
+                            name,
+                            profilePicUrl,
+                            lastMessage: newMsg.msg,
+                            date: newMsg.date
+                        }
+                        setChats(prev => [newChat, ...prev])
+                    }
+                }
+            })
         }
     }, [])
 
