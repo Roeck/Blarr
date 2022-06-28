@@ -23,6 +23,9 @@ const setMessageToUnread = async () => {
     );
 };
 
+const scrollDivToBottom = divRef =>
+    divRef.current !== null && divRef.current.scrollIntoView({ behaviour: "smooth" });
+
 function Messages({ chatsData, user }) {
     const [chats, setChats] = useState(chatsData)
     const router = useRouter()
@@ -32,6 +35,8 @@ function Messages({ chatsData, user }) {
 
     const [messages, setMessages] = useState([])
     const [bannerData, setBannerData] = useState({ name: "", profilePicUrl: "" })
+
+    const divRef = useRef();
 
     // This ref is for persisting the state of query string in url throughout re-renders. This ref is the value of query string inside url
     const openChatId = useRef("");
@@ -75,6 +80,7 @@ function Messages({ chatsData, user }) {
                 });
 
                 openChatId.current = chat.messagesWith._id;
+                divRef.current && scrollDivToBottom(divRef);
             });
 
             socket.current.on('noChatFound', async () => {
@@ -180,6 +186,10 @@ function Messages({ chatsData, user }) {
         }
     }, [])
 
+    useEffect(() => {
+        messages.length > 0 && scrollDivToBottom(divRef);
+    }, [messages]);
+
     return (
         <>
             <Segment padded basic size="large" style={{ marginTop: "5px" }}>
@@ -233,6 +243,7 @@ function Messages({ chatsData, user }) {
 
                                                     {messages.map((message, i) => (
                                                         <Message
+                                                            divRef={divRef}
                                                             key={i}
                                                             bannerProfilePic={bannerData.profilePicUrl}
                                                             message={message}
