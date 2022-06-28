@@ -20,7 +20,7 @@ connectDb();
 app.use(express.json());
 const PORT = process.env.PORT || 3000;
 const { addUser, removeUser, findConnectedUser } = require('./utilsServer/roomActions')
-const { loadMessages, sendMsg, setMsgToUnread } = require('./utilsServer/messageActions')
+const { loadMessages, sendMsg, setMsgToUnread, deleteMsg } = require('./utilsServer/messageActions')
 
 io.on("connection", socket => {
     socket.on("join", async ({ userId }) => {
@@ -51,6 +51,12 @@ io.on("connection", socket => {
         }
 
         !error && socket.emit("msgSent", { newMsg });
+    });
+
+    socket.on("deleteMsg", async ({ userId, messagesWith, messageId }) => {
+        const { success } = await deleteMsg(userId, messagesWith, messageId);
+
+        if (success) socket.emit("msgDeleted");
     });
 
     socket.on("disconnect", () => removeUser(socket.id));

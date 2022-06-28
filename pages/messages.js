@@ -95,6 +95,20 @@ function Messages({ chatsData, user }) {
         if (socket.current && router.query.message) loadMessages();
     }, [router.query.message]);
 
+    const deleteMsg = messageId => {
+        if (socket.current) {
+            socket.current.emit("deleteMsg", {
+                userId: user._id,
+                messagesWith: openChatId.current,
+                messageId
+            });
+
+            socket.current.on("msgDeleted", () => {
+                setMessages(prev => prev.filter(message => message._id !== messageId));
+            });
+        }
+    };
+
     const deleteChat = async messagesWith => {
         try {
             await axios.delete(`${baseUrl}/api/chats/${messagesWith}`, {
@@ -248,8 +262,7 @@ function Messages({ chatsData, user }) {
                                                             bannerProfilePic={bannerData.profilePicUrl}
                                                             message={message}
                                                             user={user}
-                                                            setMessages={setMessages}
-                                                            messagesWith={openChatId.current}
+                                                            deleteMsg={deleteMsg}
                                                         />
                                                     ))}
                                                 </>
