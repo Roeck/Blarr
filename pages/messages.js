@@ -13,6 +13,7 @@ import Message from "../components/Messages/Message";
 import MessageInputField from "../components/Messages/MessageInputField";
 import Banner from "../components/Messages/Banner";
 import getUserInfo from "../utils/getUserInfo";
+import newMsgSound from "../utils/newMsgSound";
 
 const setMessageToUnread = async () => {
     await axios.post(
@@ -130,6 +131,9 @@ function Messages({ chatsData, user }) {
             })
 
             socket.current.on('newMsgReceived', async ({ newMsg }) => {
+
+                let senderName;
+
                 // When chat is open in the browser:
                 if (newMsg.sender === openChatId.current) {
                     setMessages(prev => [...prev, newMsg])
@@ -137,6 +141,7 @@ function Messages({ chatsData, user }) {
                         const previousChat = prev.find(chat => chat.messagesWith === newMsg.sender)
                         previousChat.lastMessage = newMsg.msg;
                         previousChat.date = newMsg.date
+                        senderName = previousChat.name
 
                         return [...prev]
                     })
@@ -149,6 +154,7 @@ function Messages({ chatsData, user }) {
                             const previousChat = prev.find(chat => chat.messagesWith === newMsg.sender)
                             previousChat.lastMessage = newMsg.msg;
                             previousChat.date = newMsg.date
+                            senderName = previousChat.name
 
                             return [...prev]
                         })
@@ -156,6 +162,7 @@ function Messages({ chatsData, user }) {
 
                     else {
                         const { name, profilePicUrl } = await getUserInfo(newMsg.sender)
+                        senderName = name
 
                         const newChat = {
                             messagesWith: newMsg.sender,
@@ -167,6 +174,8 @@ function Messages({ chatsData, user }) {
                         setChats(prev => [newChat, ...prev])
                     }
                 }
+
+                newMsgSound(senderName)
             })
         }
     }, [])
