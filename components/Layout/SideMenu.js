@@ -28,7 +28,7 @@ function SideMenu({
                         name={unreadMessage ? "hand point right" : "mail outline"}
                         size="large"
                         {...((isActive("/messages") && { color: "violet" }) ||
-                            (unreadMessage && { color: "orange" }))}
+                            (unreadMessage && { color: "blue" }))}
                     />
                     <List.Content>{pc && <List.Header content="Messages" />}</List.Content>
                 </List.Item>
@@ -41,7 +41,7 @@ function SideMenu({
                             name={unreadNotification ? "hand point right" : "bell outline"}
                             size="large"
                             {...((isActive("/notifications") && { color: "violet" }) ||
-                                (unreadNotification && { color: "orange" }))}
+                                (unreadNotification && { color: "blue" }))}
                         />
                         <List.Content>
                             {pc && <List.Header content="Notifications" />}

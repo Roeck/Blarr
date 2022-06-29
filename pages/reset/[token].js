@@ -101,7 +101,7 @@ function TokenPage() {
                             disabled={field1 === "" || field2 === "" || loading}
                             icon="configure"
                             type="submit"
-                            color="orange"
+                            color="blue"
                             content="Reset"
                         />
                     </Segment>

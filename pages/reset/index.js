@@ -67,7 +67,7 @@ function ResetPage() {
                         disabled={loading || email.length === 0}
                         icon="configure"
                         type="submit"
-                        color="orange"
+                        color="blue"
                         content="Submit"
                     />
                 </Segment>
