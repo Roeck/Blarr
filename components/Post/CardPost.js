@@ -19,7 +19,7 @@ import calculateTime from "../../utils/calculateTime";
 import Link from "next/link";
 import { deletePost, likePost } from "../../utils/postActions";
 
-function CardPost({ post, user, setPosts, setShowToastr }) {
+function CardPost({ post, user, setPosts, setShowToastr, socket }) {
     const [likes, setLikes] = useState(post.likes);
 
     const isLiked =
@@ -130,9 +130,26 @@ function CardPost({ post, user, setPosts, setShowToastr }) {
                             name={isLiked ? "heart" : "heart outline"}
                             color="red"
                             style={{ cursor: "pointer" }}
-                            onClick={() =>
-                                likePost(post._id, user._id, setLikes, isLiked ? false : true)
-                            }
+                            onClick={() => {
+                                if (socket.current) {
+                                    socket.current.emit("likePost", {
+                                        postId: post._id,
+                                        userId: user._id,
+                                        like: isLiked ? false : true
+                                    })
+
+                                    socket.current.on("postLiked", () => {
+                                        if (isLiked) {
+                                            setLikes(prev => prev.filter(like => like.user !== user._id))
+                                        }
+                                        else {
+                                            setLikes(prev => [...prev, { user: user._id }])
+                                        }
+                                    })
+                                } else {
+                                    likePost(post._id, user._id, setLikes, isLiked ? false : true)
+                                }
+                            }}
                         />
 
                         <LikesList
