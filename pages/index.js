@@ -1,73 +1,34 @@
-import React, { useState, useEffect, useRef } from 'react'
-import io from "socket.io-client"
-import axios from 'axios'
-import baseUrl from '../utils/baseUrl'
-import CreatePost from '../components/Post/CreatePost'
-import CardPost from '../components/Post/CardPost'
-import { Segment } from 'semantic-ui-react'
-import { parseCookies } from 'nookies'
-import { NoPosts } from '../components/Layout/NoData'
-import { PostDeleteToastr } from "../components/Layout/Toastr"
-import { PlaceHolderPosts, EndMessage } from '../components/Layout/PlaceHolderGroup'
-import InfiniteScroll from 'react-infinite-scroll-component'
-import { Axios } from '../utils/postActions'
-import cookie from "js-cookie"
-import getUserInfo from "../utils/getUserInfo"
-import MessageNotificationModal from '../components/Home/MessageNotificationModal'
-import newMsgSound from "../utils/newMsgSound"
-import NotificationPortal from "../components/Home/NotificationPortal"
+import React, { useEffect, useRef, useState } from "react";
+import axios from "axios";
+import baseUrl from "../utils/baseUrl";
+import CreatePost from "../components/Post/CreatePost";
+import CardPost from "../components/Post/CardPost";
+import { Segment } from "semantic-ui-react";
+import { parseCookies } from "nookies";
+import { NoPosts } from "../components/Layout/NoData";
+import { PostDeleteToastr } from "../components/Layout/Toastr";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { PlaceHolderPosts, EndMessage } from "../components/Layout/PlaceHolderGroup";
+
+import SocketHoc from "../components/SocketHoc";
+import { Axios } from "../utils/postActions";
 
 function Index({ user, postsData, errorLoading }) {
     const [posts, setPosts] = useState(postsData || []);
     const [showToastr, setShowToastr] = useState(false);
     const [hasMore, setHasMore] = useState(true);
+
     const [pageNumber, setPageNumber] = useState(2);
 
-    const socket = useRef()
-
-    const [newMessageReceived, setNewMessageReceived] = useState(null)
-    const [newMessageModal, showNewMessageModal] = useState(false)
-
-    const [newNotification, setNewNotification] = useState(null)
-    const [notificationPopup, showNotificationPopup] = useState(false)
+    const socket = useRef();
 
     useEffect(() => {
-        if (!socket.current) {
-            socket.current = io(baseUrl)
-        }
-
-        if (socket.current) {
-            socket.current.emit("join", { userId: user._id })
-
-            socket.current.on('newMsgReceived', async ({ newMsg }) => {
-                const { name, profilePicUrl } = await getUserInfo(newMsg.sender)
-
-                if (user.newMessagePopup) {
-                    setNewMessageReceived({
-                        ...newMsg,
-                        senderName: name,
-                        senderProfilePic: profilePicUrl
-                    })
-                    showNewMessageModal(true)
-                }
-                newMsgSound(name)
-            })
-        }
-
         document.title = `Welcome, ${user.name.split(" ")[0]}`;
-
-        return () => {
-            if (socket.current) {
-                socket.current.emit('disconnect')
-                socket.current.off
-            }
-        }
-    }, [])
+    }, []);
 
     useEffect(() => {
         showToastr && setTimeout(() => setShowToastr(false), 3000);
     }, [showToastr]);
-
 
     const fetchDataOnScroll = async () => {
         try {
@@ -82,44 +43,13 @@ function Index({ user, postsData, errorLoading }) {
         }
     };
 
-    if (posts.length === 0 || errorLoading) return <NoPosts />
-
-    useEffect = (() => {
-        if (socket.current) {
-            socket.current.on(
-                "newNotificationReceived",
-                ({ name, profilePicUrl, username, postId }) => {
-                    setNewNotification({ name, profilePicUrl, username, postId })
-                    showNotificationPopup(true)
-                }
-            )
-        }
-    }, [])
-
     return (
-        <>
-            {notificationPopup && newNotification !== null && (
-                <NotificationPortal
-                    newNotification={newNotification}
-                    notificationPopup={notificationPopup}
-                    showNotificationPopup={showNotificationPopup}
-                />
-            )}
-
+        <SocketHoc user={user} socket={socket}>
             {showToastr && <PostDeleteToastr />}
-
-            {newMessageModal && newMessageReceived !== null && (
-                <MessageNotificationModal
-                    socket={socket}
-                    showNewMessageModal={showNewMessageModal}
-                    newMessageModal={newMessageModal}
-                    newMessageReceived={newMessageReceived}
-                    user={user}
-                />
-            )}
 
             <Segment>
                 <CreatePost user={user} setPosts={setPosts} />
+
                 {posts.length === 0 || errorLoading ? (
                     <NoPosts />
                 ) : (
@@ -143,8 +73,8 @@ function Index({ user, postsData, errorLoading }) {
                     </InfiniteScroll>
                 )}
             </Segment>
-        </>
-    )
+        </SocketHoc>
+    );
 }
 
 export const getServerSideProps = async ctx => {
@@ -162,4 +92,4 @@ export const getServerSideProps = async ctx => {
     }
 };
 
-export default Index
+export default Index;
