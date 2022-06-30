@@ -53,7 +53,7 @@ const likeOrUnlikePost = async (postId, userId, like) => {
             name,
             profilePicUrl,
             username,
-            postByUserId
+            postByUserId: post.user.toString()
         };
     } catch (error) {
         return { error: "Server error" };
