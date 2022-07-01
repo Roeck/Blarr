@@ -22,7 +22,7 @@ const PORT = process.env.PORT || 3000;
 const { addUser, removeUser, findConnectedUser } = require('./utilsServer/roomActions')
 const { loadMessages, sendMsg, setMsgToUnread, deleteMsg } = require('./utilsServer/messageActions')
 
-const likeOrUnlikePost = require("./utilsServer/likeOrUnlikePost")
+const { likeOrUnlikePost } = require("./utilsServer/likeOrUnlikePost")
 
 io.on("connection", socket => {
     socket.on("join", async ({ userId }) => {
