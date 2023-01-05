@@ -42,7 +42,7 @@ export const NoProfile = () => (
 );
 
 export const NoNotifications = () => (
-  <Message content="No Notifications" icon="smile" info />
+  <Message content="No Notifications" icon="meh" info />
 );
 
 export const NoPostFound = () => (
