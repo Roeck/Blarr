@@ -1,4 +1,8 @@
 # Blarr
+
+![blarr](https://github.com/Roeck/Blarr/assets/28878478/e7df3292-6bfe-4703-a7a5-a1e794b7e5a0)
+
+
 <h4>Fullstack Social Network platform with the following features:</h4>
 
 - [x] User Authentication 
